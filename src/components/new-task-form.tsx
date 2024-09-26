@@ -1,19 +1,22 @@
 "use client";
 
+import React, { useContext } from "react";
 import { PlusCircle } from "phosphor-react";
 import * as zod from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { useTaskDataMutate } from "../../../../components/hooks/useTaskDataMutate";
+import { TaskContext } from "@/contexts/task-context";
+import { postTask } from "@/service/task-service";
 
 export interface TaskData {
   id?: number;
-  description?: string;
-  completed?: boolean;
+  description: string;
+  completed: boolean;
 }
 
 const newTaskFormValidationSchema = zod.object({
   description: zod.string().min(1, "Informe a tarefa"),
+  completed: zod.boolean().default(false),
 });
 
 type NewTaskFormData = zod.infer<typeof newTaskFormValidationSchema>;
@@ -23,39 +26,38 @@ export default function NewTaskForm() {
     resolver: zodResolver(newTaskFormValidationSchema),
     defaultValues: {
       description: "",
+      completed: false,
     },
   });
+  const { setTasks } = useContext(TaskContext) || { setTasks: () => {} };
 
-  // const { mutate } = useTaskDataMutate();
   const description = watch("description");
   const isSubmitDisabled = !description;
 
-  const submit = () => {
-    const taskData: TaskData = {
-      description: description,
-      completed: false,
-    };
-    // mutate(taskData);
+  const submit = async (data: NewTaskFormData) => {
+    const token = localStorage.getItem("token");
+    const newTask = await postTask(data, token);
+    setTasks((prevTasks) => [...prevTasks, newTask]); 
     reset();
   };
 
   return (
-    <div className="flex flex-row	 justify-center ">
+    <div className="flex flex-row justify-center">
       <form onSubmit={handleSubmit(submit)} className="flex w-[736px]">
         <input
           type="text"
           id="task"
           placeholder="Adicione uma nova tarefa"
           {...register("description")}
-          className="w-[638px] h-[54px] rounded-lg outline-none bg-[#333333] text-gray-100 p-4 mr-2 placeholder-gray-300"
+          className="w-[638px] h-[54px] rounded outline-none bg-white text-gray-600 p-4 mr-2 placeholder-gray-300"
         />
         <button
           type="submit"
           disabled={isSubmitDisabled}
-          className={`flex items-center justify-center w-[90px] h-[52px] rounded-lg font-bold text-sm text-gray-100 ${
+          className={`flex items-center justify-center w-[90px] h-[52px] rounded font-bold text-sm text-gray-100  ${
             isSubmitDisabled
-              ? "bg-blue-500 opacity-70 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-700 cursor-pointer"
+              ? "bg-[#5e60ce] opacity-70 cursor-not-allowed"
+              : "bg-[#5e60ce] hover:bg-blue-700"
           }`}
         >
           Criar
