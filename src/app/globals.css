@@ -3,5 +3,9 @@
 @tailwind utilities;
 
 body {
-  background: #1a1a1a;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #C6CAEF, #BBD7F1);
 }
