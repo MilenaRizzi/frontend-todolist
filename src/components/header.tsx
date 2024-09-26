@@ -1,32 +1,29 @@
 import Image from "next/image";
+import ModalMenu from "./menu-navigation";
 import Link from "next/link";
 
-export default function Header() {
+interface HeaderProps {
+  currentPage: "auth" | "dashboard" | "home";
+}
+
+export default function Header({ currentPage }: HeaderProps) {
   return (
-    <header className="h-[100px] bg-black flex justify-between items-center p-8">
-      <div className="flex-grow flex justify-center pl-40">
-        <Image src={"/Logo.svg"} alt={""} width={150} height={150} />
-      </div>
-      <div className="flex gap-4">
-        <Link
-          href="/dashboard"
-          className="font-extrabold text-[#2791CF] hover:text-[#2FB0FA]"
-        >
-          Tarefas
-        </Link>
-        <Link
-          href="/profile"
-          className="font-extrabold text-[#2791CF] hover:text-[#2FB0FA]"
-        >
-          Perfil
-        </Link>
-        <Link
-          href="/"
-          className="font-extrabold text-[#2791CF] hover:text-[#2FB0FA]"
-        >
-          logout
+    <header className="relative h-[70px] flex items-center p-14">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <Link href={"/"}>
+          <Image src="/Logo.svg" alt="Logo" width={100} height={100} />
         </Link>
       </div>
+
+      {currentPage === "dashboard" && (
+        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 flex items-center">
+          <ModalMenu />
+        </div>
+      )}
+
+      {currentPage === "home" && (
+        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 flex items-center"></div>
+      )}
     </header>
   );
 }
